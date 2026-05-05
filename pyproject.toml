@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quant-finance-pricing-lab"
+version = "0.1.0"
+description = "Educational derivatives pricing lab: Black-Scholes, Greeks, implied volatility, binomial trees, Monte Carlo, and finite-difference methods."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Xiaodong Yang" }]
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.23"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "jupyter>=1.0",
+    "matplotlib>=3.7"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

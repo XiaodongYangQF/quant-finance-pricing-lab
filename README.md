@@ -18,6 +18,23 @@ This project demonstrates the core foundations expected in quantitative finance:
 
 The code uses synthetic examples only. No proprietary data, unpublished research code, or OptionMetrics data are included.
 
+## Documentation and theory notes
+
+This repository contains both Python implementations and theoretical notes.
+
+### Black-Scholes model
+
+- [Black-Scholes theory notes](docs/theory/black_scholes/)
+- [Black-Scholes three derivations PDF](docs/theory/black_scholes/black_scholes_three_derivations.pdf)
+
+The Black-Scholes notes cover:
+
+- Risk-neutral martingale pricing
+- Delta-hedging PDE derivation
+- Self-financing replication
+- Binomial tree pricing and convergence to Black-Scholes
+- Comparison of the main no-arbitrage pricing perspectives
+
 ## Repository structure
 
 ```text

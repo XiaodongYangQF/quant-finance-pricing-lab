@@ -85,7 +85,7 @@ quant-finance-pricing-lab/
 Clone the repository and install it locally:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/quant-finance-pricing-lab.git
+git clone https://github.com/XiaodongYangQF/quant-finance-pricing-lab.git
 cd quant-finance-pricing-lab
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\\Scripts\\activate

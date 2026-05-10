@@ -27,6 +27,7 @@ quant-finance-pricing-lab/
 ├── pyproject.toml
 ├── requirements.txt
 ├── .gitignore
+├── LICENSE
 │
 ├── src/
 │   └── quant_finance_pricing_lab/
@@ -57,8 +58,10 @@ quant-finance-pricing-lab/
 │   └── 06_finite_difference_black_scholes.ipynb
 │
 └── docs/
-    └── black_scholes_notes.md
-```
+    └── theory/
+        └── black_scholes/
+            ├── README.md
+            └── black_scholes_three_derivations.pdf
 
 ## Installation
 

@@ -1,59 +1,89 @@
-"""Analytical Black-Scholes Greeks."""
-
 from __future__ import annotations
 
-import math
-from typing import Dict
+from dataclasses import dataclass
 
-from .black_scholes import OptionType, d1_d2, norm_cdf, norm_pdf
+from scipy.stats import norm
+import numpy as np
+
+from quant_finance_pricing_lab.black_scholes import (
+    BlackScholesInputs,
+    black_scholes_price,
+    compute_d1_d2,
+    validate_inputs,
+)
 
 
-def bs_greeks(
-    S: float,
-    K: float,
-    r: float,
-    T: float,
-    sigma: float,
-    option_type: OptionType = "call",
-) -> Dict[str, float]:
-    """Return analytical Black-Scholes Greeks for a European option.
+@dataclass(frozen=True)
+class BlackScholesGreeksResult:
+    price: float
+    delta: float
+    gamma: float
+    vega: float
+    theta: float
+    rho: float
+    d1: float
+    d2: float
 
-    The Greeks are reported in natural units:
 
-    - delta: change in option value per unit change in spot
-    - gamma: change in delta per unit change in spot
-    - vega: change in option value per 1.00 change in volatility, not per 1%
-    - theta: change in option value per year
-    - rho: change in option value per 1.00 change in risk-free rate, not per 1%
-    """
-    if option_type not in {"call", "put"}:
-        raise ValueError("option_type must be 'call' or 'put'.")
-    if T <= 0:
-        raise ValueError("Greeks require positive time to maturity T.")
-    if sigma <= 0:
-        raise ValueError("Greeks require positive volatility sigma.")
+def black_scholes_greeks(inputs: BlackScholesInputs) -> BlackScholesGreeksResult:
+    validate_inputs(inputs)
 
-    d1, d2 = d1_d2(S, K, r, T, sigma)
-    pdf_d1 = norm_pdf(d1)
-    discount = math.exp(-r * T)
-    sqrt_t = math.sqrt(T)
+    s = inputs.spot
+    k = inputs.strike
+    t = inputs.maturity
+    r = inputs.rate
+    q = inputs.dividend_yield
+    sigma = inputs.volatility
+    option_type = inputs.option_type
 
-    gamma = pdf_d1 / (S * sigma * sqrt_t)
-    vega = S * pdf_d1 * sqrt_t
+    price_result = black_scholes_price(inputs)
+    d1, d2 = compute_d1_d2(inputs)
+
+    discount_r = np.exp(-r * t)
+    discount_q = np.exp(-q * t)
+
+    pdf_d1 = norm.pdf(d1)
+
+    gamma = discount_q * pdf_d1 / (s * sigma * np.sqrt(t))
+    vega_raw = s * discount_q * pdf_d1 * np.sqrt(t)
 
     if option_type == "call":
-        delta = norm_cdf(d1)
-        theta = -(S * pdf_d1 * sigma) / (2 * sqrt_t) - r * K * discount * norm_cdf(d2)
-        rho = K * T * discount * norm_cdf(d2)
-    else:
-        delta = norm_cdf(d1) - 1.0
-        theta = -(S * pdf_d1 * sigma) / (2 * sqrt_t) + r * K * discount * norm_cdf(-d2)
-        rho = -K * T * discount * norm_cdf(-d2)
+        delta = discount_q * norm.cdf(d1)
 
-    return {
-        "delta": delta,
-        "gamma": gamma,
-        "vega": vega,
-        "theta": theta,
-        "rho": rho,
-    }
+        theta_annual = (
+            -s * discount_q * pdf_d1 * sigma / (2 * np.sqrt(t))
+            - r * k * discount_r * norm.cdf(d2)
+            + q * s * discount_q * norm.cdf(d1)
+        )
+
+        rho_raw = k * t * discount_r * norm.cdf(d2)
+
+    else:
+        delta = discount_q * (norm.cdf(d1) - 1)
+
+        theta_annual = (
+            -s * discount_q * pdf_d1 * sigma / (2 * np.sqrt(t))
+            + r * k * discount_r * norm.cdf(-d2)
+            - q * s * discount_q * norm.cdf(-d1)
+        )
+
+        rho_raw = -k * t * discount_r * norm.cdf(-d2)
+
+    return BlackScholesGreeksResult(
+        price=float(price_result.price),
+        delta=float(delta),
+        gamma=float(gamma),
+
+        # Dashboard convention:
+        # Vega = price change for 1 percentage point volatility change
+        vega=float(vega_raw / 100),
+
+        # Theta = price change per calendar day
+        theta=float(theta_annual / 365),
+
+        # Rho = price change for 1 percentage point interest-rate change
+        rho=float(rho_raw / 100),
+
+        d1=float(d1),
+        d2=float(d2),
+    )

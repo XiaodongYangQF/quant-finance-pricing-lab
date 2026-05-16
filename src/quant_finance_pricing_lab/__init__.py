@@ -1,23 +1,56 @@
-"""Quant Finance Pricing Lab.
+from quant_finance_pricing_lab.black_scholes import (
+    BlackScholesInputs,
+    BlackScholesPriceResult,
+    black_scholes_price,
+    compute_d1_d2,
+    put_call_parity_gap,
+)
 
-Educational implementations for derivatives pricing and numerical methods.
-"""
+from quant_finance_pricing_lab.greeks import (
+    BlackScholesGreeksResult,
+    black_scholes_greeks,
+)
 
-from .black_scholes import black_scholes_price, put_call_parity_gap
-from .greeks import bs_greeks
-from .implied_vol import implied_volatility
-from .binomial_tree import crr_binomial_price
-from .monte_carlo import MonteCarloResult, price_european_monte_carlo, simulate_gbm_terminal
-from .finite_difference import implicit_fd_price
+from quant_finance_pricing_lab.implied_volatility import (
+    ImpliedVolatilityResult,
+    implied_volatility,
+)
+
+# from quant_finance_pricing_lab.volatility_smile import (
+#     SmileInputs,
+#     build_volatility_smile,
+#     valid_smile_points,
+# )
+
+from quant_finance_pricing_lab.implied_volatility import (
+    ImpliedVolatilityResult,
+    implied_volatility,
+    option_price_bounds,
+)
+
+from quant_finance_pricing_lab.scenario_analysis import (
+    make_shock_grid,
+    build_spot_vol_scenario_table,
+    build_greek_sensitivity_table,
+    build_time_decay_table,
+)
 
 __all__ = [
+    "BlackScholesInputs",
+    "BlackScholesPriceResult",
+    "BlackScholesGreeksResult",
     "black_scholes_price",
+    "black_scholes_greeks",
+    "compute_d1_d2",
     "put_call_parity_gap",
-    "bs_greeks",
+    "ImpliedVolatilityResult",
     "implied_volatility",
-    "crr_binomial_price",
-    "MonteCarloResult",
-    "price_european_monte_carlo",
-    "simulate_gbm_terminal",
-    "implicit_fd_price",
+    "option_price_bounds",
+    "SmileInputs",
+    "build_volatility_smile",
+    "valid_smile_points",
+    "make_shock_grid",
+    "build_spot_vol_scenario_table",
+    "build_greek_sensitivity_table",
+    "build_time_decay_table",
 ]
